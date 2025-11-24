@@ -1,6 +1,7 @@
 #include "Data.h"
 #include <iostream>
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 
@@ -9,6 +10,29 @@ typedef struct{
     double valorObj;
 } Solucao;
 
+
+typedef struct{
+    size_t noInserido;
+    size_t arestaRemovida; // distancia {i, j} a ser removida para k entrar entre eles
+    double custo;   
+} InsertionInfo;
+
+vector<InsertionInfo> calcularCustoInsercao(Solucao& s, vector<size_t>& CL, Data& dist){
+    vector<InsertionInfo> custoInsercao = vector<InsertionInfo>((s.sequencia.size() - 1 ) * CL.size()); 
+
+    int l{};
+    for(int a = 0; a < s.sequencia.size() - 1; a++){
+        int i = s.sequencia.at(a);
+        int j = s.sequencia.at(a+1);
+        for(size_t k : CL) {
+            custoInsercao[l].custo = dist.getDistance(s.sequencia[i], s.sequencia[k]) + dist.getDistance(s.sequencia[k], s.sequencia[j]) - dist.getDistance(s.sequencia[i], s.sequencia[j]);
+            custoInsercao[l].noInserido = k;
+            custoInsercao[l].arestaRemovida = a;
+            l++;
+        }
+    }
+    return custoInsercao;
+}
 
 void exibirSolucao(Solucao *s){
     {
