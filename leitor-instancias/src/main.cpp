@@ -20,18 +20,17 @@ typedef struct{
 } InsertionInfo;
 
 
-vector<InsertionInfo> calcularCustoInsercao(Solucao& s, vector<size_t>& CL, Data& dist);
+vector<InsertionInfo> calcularCustoInsercao(Solucao& s, vector<size_t>& CL, Data& tsp_info);
 void exibirSolucao(Solucao& s);
 void calcularValorObj(Solucao& s, Data& dist);
-vector <size_t> Escolher3NosAleatorios(Solucao& s, Data tsp_info, vector <size_t>& CL); 
-vector<size_t> nosRestantes(Solucao& s, Data tsp_info);
+vector <size_t> Escolher3NosAleatorios(Data& tsp_info, vector <size_t>& CL); 
+vector<size_t> nosRestantes(Solucao& s, Data& tsp_info);
+Solucao Construcao(Data& tsp_info);
 
 
 
 int main(int argc, char** argv) {   
    
-    Solucao s;
-    s.sequencia = {1, 1};
 
     vector <size_t> CL;
 
@@ -44,51 +43,53 @@ int main(int argc, char** argv) {
     data.printMatrixDist(); 
 
 
-    s.sequencia = Escolher3NosAleatorios(s, data, CL);
-
+    Solucao s = Construcao(data);
     calcularValorObj(s, data);
-
     exibirSolucao(s);
 
 
-    //exibir lista de candidatos
-    for (auto& i : CL)
-    cout << i << " ";
-    cout << endl;
-
-    // for(size_t i = 0; i < n; i++){
-    //     s.sequencia.push_back(i + 1);
-    // }
-
-    // calcularValorObj(&s, &data);
-
-    // exibirSolucao(&s);
-
-
-    
     return 0;
 }
 
-vector <size_t> Escolher3NosAleatorios(Solucao& s, Data tsp_info, vector <size_t>& CL){
+
+
+Solucao Construcao(Data& tsp_info){
+    Solucao s;
+    vector<size_t> CL;
+    s.sequencia = Escolher3NosAleatorios(tsp_info, CL);
+
+    while(!CL.empty()) {
+        vector <InsertionInfo> custoInsercao = calcularCustoInsercao(s, CL, tsp_info);
+        sort(custoInsercao.begin(), custoInsercao.end(), [](const InsertionInfo &a, const InsertionInfo &b) {return a.custo < b.custo;});
+        double alpha = (double) rand() / RAND_MAX;
+        int selecionado = rand() % ((int) ceil(alpha * custoInsercao.size()));
+        s.sequencia.insert(s.sequencia.begin() + custoInsercao[selecionado].arestaRemovida + 1, custoInsercao[selecionado].noInserido);
+        CL.erase(remove(CL.begin(), CL.end(), custoInsercao[selecionado].noInserido), CL.end()); // tira o "noInserido" do CL
+    }
+    return s;
+}
+vector <size_t> Escolher3NosAleatorios(Data& tsp_info, vector <size_t>& CL){
+    Solucao s;
+    s.sequencia = {1, 1};
+
     unsigned seed = chrono::system_clock::now().time_since_epoch().count(); // seed para randomizaçao baseado no tempo do sistema
     int n = tsp_info.getDimension();
     vector<size_t> vertices (n-1); // -1 para não levar em conta o 1
-    vector<size_t> ss = s.sequencia;
 
     for(int i = 0; i < n-1; i++)
         vertices[i] = i+2;
     
     shuffle(vertices.begin(), vertices.end(), default_random_engine(seed)); // embaralha vetor com todos os vértices
 
-    ss.insert (ss.begin()+1, vertices.begin(), vertices.begin()+3); // insere os três primeiros na sequencia
+    s.sequencia.insert (s.sequencia.begin()+1, vertices.begin(), vertices.begin()+3); // insere os três primeiros na sequencia
 
     CL = vertices;
     CL.erase(CL.begin(), CL.begin()+3); // guarda os nós restantes na lista de candidatos
     
-    return ss;
+    return s.sequencia;
 }
 
-vector<InsertionInfo> calcularCustoInsercao(Solucao& s, vector<size_t>& CL, Data& dist){
+vector<InsertionInfo> calcularCustoInsercao(Solucao& s, vector<size_t>& CL, Data& tsp_info){
     // o tamanho do vetor  tem que ter o tamanho da quantidade de possibilidades possiveis, isto é, a quantidade de inserçoes possiveis * qnt de candidatos
     vector<InsertionInfo> custoInsercao = vector<InsertionInfo>((s.sequencia.size() - 1 ) * CL.size());  
 
@@ -98,8 +99,8 @@ vector<InsertionInfo> calcularCustoInsercao(Solucao& s, vector<size_t>& CL, Data
         int i = s.sequencia.at(a);
         int j = s.sequencia.at(a+1);
         for(size_t k : CL) {
-            // aqui testa todos os candidatos para saber o custo de inserção
-            custoInsercao[l].custo = dist.getDistance(s.sequencia[i], s.sequencia[k]) + dist.getDistance(s.sequencia[k], s.sequencia[j]) - dist.getDistance(s.sequencia[i], s.sequencia[j]);
+            // aqui testa todos os candidatos para saber o custo de inserção' 
+            custoInsercao[l].custo = tsp_info.getDistance(i, k) + tsp_info.getDistance(k, j) - tsp_info.getDistance(i, j);
             custoInsercao[l].noInserido = k;
             custoInsercao[l].arestaRemovida = a;
             l++;
