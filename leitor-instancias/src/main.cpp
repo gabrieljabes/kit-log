@@ -28,8 +28,7 @@ vector<size_t> nosRestantes(Solucao& s, Data& tsp_info);
 Solucao Construcao(Data& tsp_info);
 
 
-
-int main(int argc, char** argv) {   
+int main(int argc, char** argv) {  
    
 
     vector <size_t> CL;
@@ -42,16 +41,14 @@ int main(int argc, char** argv) {
     cout << "DistanceMatrix: " << endl;
     data.printMatrixDist(); 
 
-
+    for(int i = 0; i < 5; i++){
     Solucao s = Construcao(data);
     calcularValorObj(s, data);
     exibirSolucao(s);
-
+    }
 
     return 0;
 }
-
-
 
 Solucao Construcao(Data& tsp_info){
     Solucao s;
@@ -72,20 +69,24 @@ vector <size_t> Escolher3NosAleatorios(Data& tsp_info, vector <size_t>& CL){
     Solucao s;
     s.sequencia = {1, 1};
 
-    unsigned seed = chrono::system_clock::now().time_since_epoch().count(); // seed para randomizaçao baseado no tempo do sistema
     int n = tsp_info.getDimension();
     vector<size_t> vertices (n-1); // -1 para não levar em conta o 1
 
     for(int i = 0; i < n-1; i++)
         vertices[i] = i+2;
-    
-    shuffle(vertices.begin(), vertices.end(), default_random_engine(seed)); // embaralha vetor com todos os vértices
 
-    s.sequencia.insert (s.sequencia.begin()+1, vertices.begin(), vertices.begin()+3); // insere os três primeiros na sequencia
+    for(int i = 0; i < 3; i++){
+        int l = rand() % vertices.size(); // indice aleatorio 
+        size_t noEscolhido = vertices[l];
+        
+        s.sequencia.insert(s.sequencia.begin() + 1, noEscolhido);
+
+        // remove o noEscolhido dos vertices para n sortear dnv
+        vertices.erase(vertices.begin() + l);
+    }
 
     CL = vertices;
-    CL.erase(CL.begin(), CL.begin()+3); // guarda os nós restantes na lista de candidatos
-    
+
     return s.sequencia;
 }
 
