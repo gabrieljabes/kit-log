@@ -30,7 +30,7 @@ Solucao Construcao(Data& tsp_info);
 
 int main(int argc, char** argv) {  
    
-
+    srand(time(NULL));
     vector <size_t> CL;
 
     auto data = Data(argc, argv[1]);
