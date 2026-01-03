@@ -26,11 +26,16 @@ void calcularValorObj(Solucao& s, Data& dist);
 vector <size_t> Escolher3NosAleatorios(Data& tsp_info, vector <size_t>& CL); 
 vector<size_t> nosRestantes(Solucao& s, Data& tsp_info);
 Solucao Construcao(Data& tsp_info);
+bool bestImprovementSwap(Solucao& s, Data& tsp_info);
+bool bestImprovement2Opt(Solucao& s, Data& tsp_info);
+bool bestImprovementOrOpt(Solucao& s, Data& tsp_info, int n);
+
 
 
 int main(int argc, char** argv) {  
    
     srand(time(NULL));
+    
     vector <size_t> CL;
 
     auto data = Data(argc, argv[1]);
@@ -121,4 +126,23 @@ void calcularValorObj(Solucao& s, Data& dist){
     s.valorObj = 0.0;
     for(size_t i = 0; i < s.sequencia.size() - 1; i++)
         s.valorObj+= dist.getDistance(s.sequencia[i], s.sequencia[i+1]);
+}
+
+bool bestImprovementSwap(Solucao& s, Data& tsp_info){
+    size_t best_i, best_j;
+    double bestDelta{};
+    for(size_t i = 1; i < s.sequencia.size() - 1; i++){
+        size_t vi = s.sequencia[i];
+        size_t vi_prev = s.sequencia [i - 1];
+        size_t vi_next = s.sequencia [i + 1];
+        for(size_t j = 1; j < s.sequencia.size() - 1; j++){
+            size_t vj = s.sequencia[j];
+            size_t vj_prev = s.sequencia[j - 1];
+            size_t vj_next = s.sequencia[j + 1];
+
+
+            
+        }
+
+    }
 }
