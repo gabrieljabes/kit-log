@@ -37,6 +37,7 @@ int main(int argc, char** argv) {
     srand(time(NULL));
     
     vector <size_t> CL;
+    bool improved = false;
 
     auto data = Data(argc, argv[1]);
     data.read();
@@ -46,11 +47,11 @@ int main(int argc, char** argv) {
     cout << "DistanceMatrix: " << endl;
     data.printMatrixDist(); 
 
-    for(int i = 0; i < 5; i++){
     Solucao s = Construcao(data);
     calcularValorObj(s, data);
     exibirSolucao(s);
-    }
+    improved = bestImprovementSwap(s, data);
+    exibirSolucao(s);
 
     return 0;
 }
@@ -135,14 +136,35 @@ bool bestImprovementSwap(Solucao& s, Data& tsp_info){
         size_t vi = s.sequencia[i];
         size_t vi_prev = s.sequencia [i - 1];
         size_t vi_next = s.sequencia [i + 1];
-        for(size_t j = 1; j < s.sequencia.size() - 1; j++){
+        for(size_t j = i + 1; j < s.sequencia.size() - 1; j++){
             size_t vj = s.sequencia[j];
             size_t vj_prev = s.sequencia[j - 1];
             size_t vj_next = s.sequencia[j + 1];
 
+            double delta = 
+            //retira as arestas adjacentes de vi e vj (os que serao trocados caso valha a pena)
+            - tsp_info.getDistance(vi_prev, vi)
+            - tsp_info.getDistance(vi, vi_next)
+            - tsp_info.getDistance(vj_prev, vj)
+            - tsp_info.getDistance(vj, vj_next)
+            // arestas novas caso ocorresse o swap
+            + tsp_info.getDistance(vi_prev, vj)
+            + tsp_info.getDistance(vi_next, vj)
+            + tsp_info.getDistance(vj_prev, vi)
+            + tsp_info.getDistance(vj_next, vi);
 
-            
+            if(delta < bestDelta){
+                bestDelta = delta;
+                best_i = i;
+                best_j = j;
+            }
         }
-
     }
+
+    if(bestDelta < 0){
+        swap(s.sequencia[best_i], s.sequencia[best_j]);
+        s.valorObj += bestDelta;
+        return true;
+    }
+    return false;
 }
