@@ -141,7 +141,18 @@ bool bestImprovementSwap(Solucao& s, Data& tsp_info){
             size_t vj_prev = s.sequencia[j - 1];
             size_t vj_next = s.sequencia[j + 1];
 
-            double delta = 
+            double delta;
+
+            if(j == i + 1){
+                //caso em que vi e vj sao adjacentes
+                delta = 
+                - tsp_info.getDistance(vi_prev, vi)
+                - tsp_info.getDistance(vj_next, vj)
+                + tsp_info.getDistance(vi_prev, vj)
+                + tsp_info.getDistance(vj_next, vi);
+
+            } else {
+            delta = 
             //retira as arestas adjacentes de vi e vj (os que serao trocados caso valha a pena)
             - tsp_info.getDistance(vi_prev, vi)
             - tsp_info.getDistance(vi, vi_next)
@@ -152,6 +163,7 @@ bool bestImprovementSwap(Solucao& s, Data& tsp_info){
             + tsp_info.getDistance(vi_next, vj)
             + tsp_info.getDistance(vj_prev, vi)
             + tsp_info.getDistance(vj_next, vi);
+            }
 
             if(delta < bestDelta){
                 bestDelta = delta;
