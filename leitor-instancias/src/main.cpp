@@ -50,8 +50,9 @@ int main(int argc, char** argv) {
     Solucao s = Construcao(data);
     calcularValorObj(s, data);
     exibirSolucao(s);
-    improved = bestImprovementSwap(s, data);
+    improved = bestImprovementOrOpt(s, data, 2);
     exibirSolucao(s);
+
 
     return 0;
 }
@@ -148,7 +149,7 @@ bool bestImprovementSwap(Solucao& s, Data& tsp_info){
                 delta = 
                 - tsp_info.getDistance(vi_prev, vi)
                 - tsp_info.getDistance(vj_next, vj)
-                + tsp_info.getDistance(vi_prev, vj)
+                + tsp_info.getDistance(vi_prev, vj) 
                 + tsp_info.getDistance(vj_next, vi);
 
             } else {
@@ -172,6 +173,7 @@ bool bestImprovementSwap(Solucao& s, Data& tsp_info){
             }
         }
     }
+    
 
     if(bestDelta < 0){
         swap(s.sequencia[best_i], s.sequencia[best_j]);
@@ -180,3 +182,50 @@ bool bestImprovementSwap(Solucao& s, Data& tsp_info){
     }
     return false;
 }
+
+bool bestImprovementOrOpt(Solucao& s, Data& tsp_info, int n){ 
+     size_t best_i, best_j;
+    double bestDelta{};
+    for(size_t i = 1; i < s.sequencia.size() - 1; i++){
+
+        vector <size_t> vi;
+
+        int k;
+        for(k = 0; k < n; k++)  
+            vi.push_back(s.sequencia[i + k]);
+            
+        size_t vi_prev = s.sequencia[i - 1];
+        size_t vi_next = s.sequencia[i + n];
+        for(size_t j = i + n; j < s.sequencia.size() - 1; j++){
+            size_t vj = s.sequencia[j];
+            size_t vj_prev = s.sequencia[j - 1];
+            size_t vj_next = s.sequencia[j + 1];
+
+           
+            double delta =  
+            - tsp_info.getDistance(vi_prev, vi.front())
+            - tsp_info.getDistance(vi.back(), vi_next)
+            - tsp_info.getDistance(vj, vj_next)
+            + tsp_info.getDistance(vi.front(), vj)
+            + tsp_info.getDistance(vi.back(), vj_next)
+            + tsp_info.getDistance(vi_prev, vi_next);
+
+            if(delta < bestDelta){
+                bestDelta = delta;
+                best_i = i;
+                best_j = j;
+            }
+        }
+    }
+
+    if(bestDelta < 0){
+        vector <size_t> v;
+        v.insert(v.begin(), s.sequencia.begin() + best_i, s.sequencia.begin() + best_i + n);
+        s.sequencia.erase(s.sequencia.begin() + best_i, s.sequencia.begin() + best_i + n);
+        s.sequencia.insert(s.sequencia.begin() - n + best_j, v.begin(), v.end());
+        s.valorObj += bestDelta;
+        return true;
+    }
+    return false;
+}
+
