@@ -50,7 +50,7 @@ int main(int argc, char** argv) {
     Solucao s = Construcao(data);
     calcularValorObj(s, data);
     exibirSolucao(s);
-    improved = bestImprovementOrOpt(s, data, 2);
+    improved = bestImprovement2Opt(s, data);
     exibirSolucao(s);
 
 
@@ -184,9 +184,9 @@ bool bestImprovementSwap(Solucao& s, Data& tsp_info){
 }
 
 bool bestImprovementOrOpt(Solucao& s, Data& tsp_info, int n){ 
-     size_t best_i, best_j;
+    size_t best_i, best_j;
     double bestDelta{};
-    for(size_t i = 1; i < s.sequencia.size() - 1; i++){
+    for(size_t i = 1; i < s.sequencia.size() - n; i++){
 
         vector <size_t> vi;
 
@@ -229,3 +229,38 @@ bool bestImprovementOrOpt(Solucao& s, Data& tsp_info, int n){
     return false;
 }
 
+bool bestImprovement2Opt(Solucao& s, Data& tsp_info){
+    size_t best_i, best_j;
+    double bestDelta{};
+
+    for(size_t i = 0; i < s.sequencia.size() - 3; i++){
+        size_t vi = s.sequencia[i];
+        size_t vi_prev = s.sequencia[i - 1];
+        size_t vi_next = s.sequencia[i + 1];
+        for(size_t j = i + 2; j < s.sequencia.size() - 1; j++){
+            size_t vj = s.sequencia[j];
+            size_t vj_prev = s.sequencia[j - 1];
+            size_t vj_next = s.sequencia[j + 1];
+
+            double delta =  
+            - tsp_info.getDistance(vi, vi_next)
+            - tsp_info.getDistance(vj, vj_next)
+            + tsp_info.getDistance(vi, vj)
+            + tsp_info.getDistance(vi_next, vj_next);
+
+            if(delta < bestDelta){
+                bestDelta = delta;
+                best_i = i;
+                best_j = j;
+                
+            }
+        }
+    }
+
+    if(bestDelta < 0){
+        reverse(s.sequencia.begin() + best_i + 1, s.sequencia.begin() + best_j + 1);
+        s.valorObj += bestDelta;
+        return true;
+    }
+    return false;
+}
