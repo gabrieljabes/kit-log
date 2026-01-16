@@ -50,8 +50,11 @@ int main(int argc, char** argv) {
     Solucao s = Construcao(data);
     calcularValorObj(s, data);
     exibirSolucao(s);
-    improved = bestImprovement2Opt(s, data);
+    improved = bestImprovementOrOpt(s, data, 2);
     exibirSolucao(s);
+    calcularValorObj(s, data);
+    exibirSolucao(s);
+
 
 
     return 0;
@@ -186,28 +189,30 @@ bool bestImprovementSwap(Solucao& s, Data& tsp_info){
 bool bestImprovementOrOpt(Solucao& s, Data& tsp_info, int n){ 
     size_t best_i, best_j;
     double bestDelta{};
-    for(size_t i = 1; i < s.sequencia.size() - n; i++){
-
-        vector <size_t> vi;
-
-        int k;
-        for(k = 0; k < n; k++)  
-            vi.push_back(s.sequencia[i + k]);
-            
+    for(size_t i = 1; i < s.sequencia.size() - 1 - n; i++){
+        // definindo o primeiro e ultimo elemento do bloco
+        size_t bloco_first = s.sequencia[i];
+        size_t bloco_last  = s.sequencia[i + n - 1];
+        
         size_t vi_prev = s.sequencia[i - 1];
         size_t vi_next = s.sequencia[i + n];
-        for(size_t j = i + n; j < s.sequencia.size() - 1; j++){
+
+        for(size_t j = 0; j < s.sequencia.size() - 1; j++){
+            // para garantir que j nao esteja contido no bloco
+            if(j>= i - 1 &&  j <= i + n - 1) 
+                continue;
             size_t vj = s.sequencia[j];
             size_t vj_prev = s.sequencia[j - 1];
             size_t vj_next = s.sequencia[j + 1];
 
+
            
             double delta =  
-            - tsp_info.getDistance(vi_prev, vi.front())
-            - tsp_info.getDistance(vi.back(), vi_next)
+            - tsp_info.getDistance(vi_prev, bloco_first)
+            - tsp_info.getDistance(bloco_last, vi_next)
             - tsp_info.getDistance(vj, vj_next)
-            + tsp_info.getDistance(vi.front(), vj)
-            + tsp_info.getDistance(vi.back(), vj_next)
+            + tsp_info.getDistance(bloco_first, vj)
+            + tsp_info.getDistance(bloco_last, vj_next)
             + tsp_info.getDistance(vi_prev, vi_next);
 
             if(delta < bestDelta){
@@ -221,9 +226,17 @@ bool bestImprovementOrOpt(Solucao& s, Data& tsp_info, int n){
     if(bestDelta < 0){
         vector <size_t> v;
         v.insert(v.begin(), s.sequencia.begin() + best_i, s.sequencia.begin() + best_i + n);
-        s.sequencia.erase(s.sequencia.begin() + best_i, s.sequencia.begin() + best_i + n);
-        s.sequencia.insert(s.sequencia.begin() - n + best_j, v.begin(), v.end());
+
+        if(best_i < best_j){
+            s.sequencia.erase(s.sequencia.begin() + best_i, s.sequencia.begin() + best_i + n);
+            s.sequencia.insert(s.sequencia.begin() - n + best_j + 1, v.begin(), v.end());
+        }
+            else{
+                s.sequencia.erase(s.sequencia.begin() + best_i, s.sequencia.begin() + best_i + n);
+                s.sequencia.insert(s.sequencia.begin() + best_j + 1, v.begin(), v.end());
+            }
         s.valorObj += bestDelta;
+
         return true;
     }
     return false;
