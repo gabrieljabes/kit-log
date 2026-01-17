@@ -29,6 +29,7 @@ Solucao Construcao(Data& tsp_info);
 bool bestImprovementSwap(Solucao& s, Data& tsp_info);
 bool bestImprovement2Opt(Solucao& s, Data& tsp_info);
 bool bestImprovementOrOpt(Solucao& s, Data& tsp_info, int n);
+void BuscaLocal(Solucao& s, Data& tsp_info);
 
 
 
@@ -50,12 +51,12 @@ int main(int argc, char** argv) {
     Solucao s = Construcao(data);
     calcularValorObj(s, data);
     exibirSolucao(s);
-    improved = bestImprovementOrOpt(s, data, 2);
+    improved = bestImprovement2Opt(s, data);
     exibirSolucao(s);
     calcularValorObj(s, data);
     exibirSolucao(s);
 
-
+    
 
     return 0;
 }
@@ -205,8 +206,6 @@ bool bestImprovementOrOpt(Solucao& s, Data& tsp_info, int n){
             size_t vj_prev = s.sequencia[j - 1];
             size_t vj_next = s.sequencia[j + 1];
 
-
-           
             double delta =  
             - tsp_info.getDistance(vi_prev, bloco_first)
             - tsp_info.getDistance(bloco_last, vi_next)
@@ -276,4 +275,38 @@ bool bestImprovement2Opt(Solucao& s, Data& tsp_info){
         return true;
     }
     return false;
+}
+
+void BuscaLocal(Solucao& s, Data& tsp_info){
+    vector <int> NL = {1, 2, 3, 4, 5};
+    bool improved = false;
+
+    while(NL.empty() == false)
+    {
+        int n = rand() % NL.size();
+        switch(NL[n])
+        {
+        case 1:
+            improved =  bestImprovementSwap(s, tsp_info);
+            break;
+        case 2:
+            improved = bestImprovement2Opt(s, tsp_info);
+            break;
+        case 3:
+            improved = bestImprovementOrOpt(s, tsp_info, 1);
+            break;
+        case 4:
+            improved = bestImprovementOrOpt(s, tsp_info, 2);
+            break;
+        case 5:
+            improved = bestImprovementOrOpt(s, tsp_info, 3);
+            break;
+        }
+        if (improved)
+            //admite todas as estruturas como opçoes novamente já que a soluçao mudou
+            NL = {1, 2, 3, 4, 5};
+        else
+            //descarta a estrutura de vizinhança sorteada como opçao na proxima execuçao
+            NL.erase(NL.begin() + n);
+    }
 }
