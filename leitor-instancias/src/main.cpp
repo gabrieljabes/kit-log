@@ -51,12 +51,10 @@ int main(int argc, char** argv) {
     Solucao s = Construcao(data);
     calcularValorObj(s, data);
     exibirSolucao(s);
-    improved = bestImprovement2Opt(s, data);
-    exibirSolucao(s);
-    calcularValorObj(s, data);
+    BuscaLocal(s, data);
     exibirSolucao(s);
 
-    
+
 
     return 0;
 }
