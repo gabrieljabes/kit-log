@@ -30,6 +30,8 @@ bool bestImprovementSwap(Solucao& s, Data& tsp_info);
 bool bestImprovement2Opt(Solucao& s, Data& tsp_info);
 bool bestImprovementOrOpt(Solucao& s, Data& tsp_info, int n);
 void BuscaLocal(Solucao& s, Data& tsp_info);
+Solucao Perturbacao(Solucao& s, Data& tsp_info);
+Solucao ILS(int& maxIter, int& maxIterILS, Data& tsp_info);
 
 
 
@@ -48,13 +50,13 @@ int main(int argc, char** argv) {
     cout << "DistanceMatrix: " << endl;
     data.printMatrixDist(); 
 
-    Solucao s = Construcao(data);
+    int maxIter = 50;
+    int maxIterILS = (data.getDimension() >= 150) ? ceil(data.getDimension()/2) : data.getDimension();
+    cout << maxIterILS << endl;
+
+    Solucao s = ILS(maxIter, maxIterILS, data);
     calcularValorObj(s, data);
     exibirSolucao(s);
-    BuscaLocal(s, data);
-    exibirSolucao(s);
-
-
 
     return 0;
 }
@@ -307,4 +309,70 @@ void BuscaLocal(Solucao& s, Data& tsp_info){
             //descarta a estrutura de vizinhança sorteada como opçao na proxima execuçao
             NL.erase(NL.begin() + n);
     }
+}
+
+Solucao Perturbacao(Solucao& s, Data& tsp_info){
+    Solucao s_linha = s;
+    
+    //tamanho maximo de um bloco
+    size_t max = (size_t)ceil(tsp_info.getDimension()/10.0);
+    //tamanho maximo entre os gaps
+
+
+    //tamanho dos blocos
+    size_t A = rand() % (max - 1) + 2;
+    size_t B = rand() % (max - 1) + 2;
+
+     //espaço dos gaps
+     size_t total_gaps = tsp_info.getDimension() - A - B - 1;
+     size_t gap1 = rand() % (total_gaps - 1);
+     total_gaps -= gap1;
+     size_t gap2 = rand() % (total_gaps - 1) + 1;
+
+    //posiçoes
+    auto p_A = gap1 + 1;
+    auto p_B = p_A + A + gap2;
+
+    //blocos
+    vector <size_t> bloco_a; 
+    vector <size_t> bloco_b;
+
+    //movimentos pra trocar os blocos de posiçao
+    bloco_a.insert(bloco_a.begin(), s.sequencia.begin() + p_A, s.sequencia.begin() + p_A + A);
+    bloco_b.insert(bloco_b.begin(), s.sequencia.begin() + p_B, s.sequencia.begin() + p_B + B);
+
+    s_linha.sequencia.erase(s_linha.sequencia.begin() + p_B, s_linha.sequencia.begin() + p_B + B);
+    s_linha.sequencia.erase(s_linha.sequencia.begin() + p_A, s_linha.sequencia.begin() + p_A + A);
+
+
+    s_linha.sequencia.insert(s_linha.sequencia.begin() + p_A, bloco_b.begin(), bloco_b.end());
+    s_linha.sequencia.insert(s_linha.sequencia.begin() + (p_B - A + B), bloco_a.begin(), bloco_a.end());
+
+    calcularValorObj(s_linha, tsp_info);
+    return s_linha;
+}
+
+Solucao ILS(int& maxIter, int& maxIterILS, Data& tsp_info){
+    Solucao bestOfAll;
+    bestOfAll.valorObj = INFINITY;
+    for(int i = 0; i < maxIter; i++){
+        Solucao s = Construcao(tsp_info);
+        Solucao best = s;
+
+        int iterIls = 0;
+
+        while(iterIls <= maxIterILS){
+            BuscaLocal(s, tsp_info);
+            if(s.valorObj < best.valorObj){
+                best = s;
+                iterIls = 0;
+            }
+            s = Perturbacao(best, tsp_info);
+            iterIls++;
+        }
+        if(best.valorObj < bestOfAll.valorObj)
+            bestOfAll = best;
+    }
+
+    return bestOfAll;
 }
