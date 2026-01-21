@@ -55,7 +55,6 @@ int main(int argc, char** argv) {
     cout << maxIterILS << endl;
 
     Solucao s = ILS(maxIter, maxIterILS, data);
-    calcularValorObj(s, data);
     exibirSolucao(s);
 
     return 0;
@@ -74,6 +73,7 @@ Solucao Construcao(Data& tsp_info){
         s.sequencia.insert(s.sequencia.begin() + custoInsercao[selecionado].arestaRemovida + 1, custoInsercao[selecionado].noInserido);
         CL.erase(remove(CL.begin(), CL.end(), custoInsercao[selecionado].noInserido), CL.end()); // tira o "noInserido" do CL
     }
+    calcularValorObj(s, tsp_info);
     return s;
 }
 vector <size_t> Escolher3NosAleatorios(Data& tsp_info, vector <size_t>& CL){
