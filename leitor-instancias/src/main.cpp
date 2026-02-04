@@ -247,11 +247,9 @@ bool bestImprovement2Opt(Solucao& s, Data& tsp_info){
 
     for(size_t i = 0; i < s.sequencia.size() - 3; i++){
         size_t vi = s.sequencia[i];
-        size_t vi_prev = s.sequencia[i - 1];
         size_t vi_next = s.sequencia[i + 1];
         for(size_t j = i + 2; j < s.sequencia.size() - 1; j++){
             size_t vj = s.sequencia[j];
-            size_t vj_prev = s.sequencia[j - 1];
             size_t vj_next = s.sequencia[j + 1];
 
             double delta =  
