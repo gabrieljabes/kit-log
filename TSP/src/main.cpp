@@ -11,9 +11,6 @@ int main(int argc, char** argv) {
 
     srand(time(NULL));
     
-    vector <size_t> CL;
-    bool improved = false;
-
     auto data = Data(argc, argv[1]);
     data.read();
     size_t n = data.getDimension(); 
