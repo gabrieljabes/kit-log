@@ -1,8 +1,9 @@
 #pragma once
 #include "Data.h"
+#include "Solucao.h"
 
 
-typedef struct{
+struct Subsequence{
     double T; // tempo do bloco
     double C; // latencia do bloco
     int W; // custo de atraso ou qnt de elementos na subsequencia;
@@ -21,5 +22,26 @@ typedef struct{
         return sigma;
     }
 
+};
 
-} Subsequence;
+    inline void UpdateAllSubseq(Solucao& s, vector<vector<Subsequence>>& subseq_matrix, Data& problem_info){
+        int n = s.sequencia.size();
+
+        //subsequencias de um unico nó de acordo com a pag 29
+        for(int i = 0; i < n; i++){
+            subseq_matrix[i][i].W = (i > 0);
+            subseq_matrix[i][i].C = 0;
+            subseq_matrix[i][i].T = 0;
+            subseq_matrix[i][i].first = s.sequencia[i];
+            subseq_matrix[i][i].last = s.sequencia[i];
+        }
+
+        for(int i = 0; i < n; i++)
+            for(int j = i + 1; j < n; j++)
+                subseq_matrix[i][j] = Subsequence::Concatenate(subseq_matrix[i][j-1], subseq_matrix[j][j], problem_info);
+
+        for(int i = n - 1; i >= 0; i--)
+            for(int j = i - 1; j >= 0; j--)
+                subseq_matrix[i][j] = Subsequence::Concatenate(subseq_matrix[i][j+1], subseq_matrix[j][j], problem_info);
+    }
+    
