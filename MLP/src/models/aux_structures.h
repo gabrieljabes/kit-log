@@ -44,4 +44,14 @@ struct Subsequence{
             for(int j = i - 1; j >= 0; j--)
                 subseq_matrix[i][j] = Subsequence::Concatenate(subseq_matrix[i][j+1], subseq_matrix[j][j], problem_info);
     }
+
+        inline void debugInfoSubseq(Solucao& s, Subsequence subseq, Data& problem_info){
+            cout << endl << endl;
+            cout << "=== subSeq[" << subseq.first << "][" << subseq.last << "] ===" << endl; 
+            cout << "T (tempo do bloco): " << subseq.T << endl;
+            cout << "C (latencia do bloco): " << subseq.C << endl;
+            cout << "W (qtd de elementos): " << subseq.W << endl;
+            cout << "first sigma: " << subseq.first << endl;
+            cout << "last sigma: " << subseq.last << endl;
+    }
     
