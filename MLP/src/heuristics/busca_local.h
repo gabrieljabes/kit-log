@@ -8,5 +8,5 @@ bool bestImprovementSwap(Solucao& s, Data& problem_info, vector <vector<Subseque
 bool bestImprovement2Opt(Solucao& s, Data& problem_info, vector <vector<Subsequence>>& matrix);
 bool bestImprovementOrOpt(Solucao& s, Data& problem_info, vector <vector<Subsequence>>& matrix, int m);
 
-void BuscaLocal(Solucao& s, Data& problem_info);
+void BuscaLocal(Solucao& s, Data& problem_info, vector <vector<Subsequence>>& matrix);
 

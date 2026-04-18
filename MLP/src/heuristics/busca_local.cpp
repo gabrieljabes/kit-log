@@ -153,3 +153,37 @@ bool bestImprovement2Opt(Solucao& s, Data& problem_info, vector <vector<Subseque
     }
     return false;
 }
+
+void BuscaLocal(Solucao& s, Data& problem_info, vector <vector<Subsequence>>& matrix){
+    vector <int> NL = {1, 2, 3, 4, 5};
+    bool improved = false;
+
+    while(NL.empty() == false)
+    {
+        int n = rand() % NL.size();
+        switch(NL[n])
+        {
+        case 1:
+            improved =  bestImprovementSwap(s, problem_info, matrix);
+            break;
+        case 2:
+            improved = bestImprovement2Opt(s, problem_info, matrix);
+            break;
+        case 3:
+            improved = bestImprovementOrOpt(s, problem_info, matrix, 1);
+            break;
+        case 4:
+            improved = bestImprovementOrOpt(s, problem_info, matrix, 2);
+            break;
+        case 5:
+            improved = bestImprovementOrOpt(s, problem_info, matrix, 3);
+            break;
+        }
+        if (improved){
+            UpdateAllSubseq(s, matrix, problem_info);
+            NL = {1, 2, 3, 4, 5};
+        }
+        else
+            NL.erase(NL.begin() + n);
+    }
+}

@@ -5,6 +5,8 @@
 #include "models/aux_structures.h"
 #include "heuristics/busca_local.h"
 #include "heuristics/construcao.h"
+#include "heuristics/perturbacao.h"
+#include "heuristics/ILS.h"
 
 bool bestImprovementSwap(Solucao& s, Data& problem_info, vector <vector<Subsequence>>& matrix);
 Solucao Construcao(Data& problem_info);
@@ -22,20 +24,22 @@ int main(int argc, char** argv) {
     cout << "DistanceMatrix: " << endl;
     data.printMatrixDist(); 
 
-    int maxIter = 50;
-    int maxIterILS = (data.getDimension() >= 150) ? ceil(data.getDimension()/2) : data.getDimension();
+    int maxIter = 10;
+    int maxIterILS = min((size_t)100, n);
     cout << maxIterILS << endl;
-    Solucao s = Construcao(data);
 
     vector<vector<Subsequence>> subseq_matrix (n+1, vector<Subsequence>(n+1));
-    UpdateAllSubseq(s, subseq_matrix, data);
-    s.valorObj = subseq_matrix[0][s.sequencia.size()-1].C;
+
+    auto t1 = chrono::high_resolution_clock::now();
+    Solucao s = ILS(maxIter, maxIterILS, data, subseq_matrix);
+    auto t2 = chrono::high_resolution_clock::now();
+
+    double tempo = chrono::duration<double>(t2 - t1).count();
+
+    cout << fixed << setprecision(0);
     exibirSolucao(s);
-    bestImprovement2Opt(s, data, subseq_matrix);
-    exibirSolucao(s);
-
-
-
+    cout << defaultfloat << setprecision(6);
+    cout << "tempo de execução: " << tempo << endl;
 
     return 0;
 }
