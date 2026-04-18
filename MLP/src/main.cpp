@@ -6,6 +6,7 @@
 #include "heuristics/busca_local.h"
 #include "heuristics/construcao.h"
 
+bool bestImprovementSwap(Solucao& s, Data& problem_info, vector <vector<Subsequence>>& matrix);
 Solucao Construcao(Data& problem_info);
 vector<size_t> ListaCandidatos(Data& problem_info);
 
@@ -30,9 +31,8 @@ int main(int argc, char** argv) {
     UpdateAllSubseq(s, subseq_matrix, data);
     s.valorObj = subseq_matrix[0][s.sequencia.size()-1].C;
     exibirSolucao(s);
-    bestImprovementSwap(s, data, subseq_matrix);
+    bestImprovementOrOpt(s, data, subseq_matrix, 3);
     exibirSolucao(s);
-
     return 0;
 }
 
