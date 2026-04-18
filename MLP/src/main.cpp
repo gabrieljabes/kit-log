@@ -31,8 +31,12 @@ int main(int argc, char** argv) {
     UpdateAllSubseq(s, subseq_matrix, data);
     s.valorObj = subseq_matrix[0][s.sequencia.size()-1].C;
     exibirSolucao(s);
-    bestImprovementOrOpt(s, data, subseq_matrix, 3);
+    bestImprovement2Opt(s, data, subseq_matrix);
     exibirSolucao(s);
+
+
+
+
     return 0;
 }
 

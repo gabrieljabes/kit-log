@@ -49,10 +49,12 @@ bool bestImprovementOrOpt(Solucao& s, Data& problem_info, vector <vector<Subsequ
     size_t n = matrix.size();
     size_t best_i, best_j;
     double best_delta = 0;
+
     for(size_t i = 1; i < matrix.size() - 1 - m; i++){
         for(size_t j = 0; j < matrix.size() - 1; j++){
             if(j >= i - 1 &&  j <= i + m - 1) 
                 continue;
+
             Subsequence *particoes[5];
             if(i < j){
                 particoes[0] = &matrix[0][i - 1];
@@ -114,3 +116,40 @@ bool bestImprovementOrOpt(Solucao& s, Data& problem_info, vector <vector<Subsequ
     return false;
 }
 
+
+bool bestImprovement2Opt(Solucao& s, Data& problem_info, vector <vector<Subsequence>>& matrix){
+    size_t n = matrix.size();
+    size_t best_i, best_j;
+    double best_delta = 0;
+
+    for(size_t i = 1; i < matrix.size() - 2; i++){
+        for(size_t j = i+1; j < matrix.size() - 1; j++){
+
+                Subsequence *particoes[3];
+
+                particoes[0] = &matrix[0][i - 1];
+                particoes[1] = &matrix[j][i];
+                particoes[2] = &matrix[j + 1][n - 1];
+                
+                Subsequence reconstrucao = *particoes[0];
+                for(int k = 1; k < 3; k++)
+                    reconstrucao = Subsequence::Concatenate(reconstrucao, *particoes[k], problem_info);
+
+                double delta = reconstrucao.C - matrix[0][n - 1].C;
+                
+            if(delta < best_delta){
+                best_delta = delta;
+                best_i = i;
+                best_j = j;
+            }
+        }
+    }
+
+    if(best_delta < 0){
+        reverse(s.sequencia.begin() + best_i, s.sequencia.begin() + best_j + 1);
+        s.valorObj += best_delta;
+        return true;
+
+    }
+    return false;
+}
