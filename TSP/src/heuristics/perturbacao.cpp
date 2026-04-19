@@ -7,13 +7,13 @@ Solucao Perturbacao(Solucao& s, Data& tsp_info){
     Solucao s_linha = s;
     
     //tamanho maximo de um bloco
-    size_t max = (size_t)ceil(tsp_info.getDimension()/10.0);
+    size_t max_tamanho = max((size_t)2, (size_t)ceil(tsp_info.getDimension()/10.0));
     //tamanho maximo entre os gaps
 
 
     //tamanho dos blocos
-    size_t A = rand() % (max - 1) + 2;
-    size_t B = rand() % (max - 1) + 2;
+    size_t A = rand() % (max_tamanho - 1) + 2;
+    size_t B = rand() % (max_tamanho - 1) + 2;
 
      //espaço dos gaps
      size_t total_gaps = tsp_info.getDimension() - A - B - 1;
