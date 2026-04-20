@@ -16,19 +16,23 @@ CCFLAGS = $(CCOPT)
 
 #### diretorios com os source files e com os objs files
 SRCDIR = src
+MODELSDIR = ../models
 OBJDIR = obj
 #############################
 
 #### lista de todos os srcs e todos os objs
 ## SRCS = $(wildcard $(SRCDIR)/*.cpp) n entra nas subpastas
 SRCS = $(shell find $(SRCDIR) -name '*.cpp')
+MODELS_SRCS = $(shell find $(MODELSDIR) -name '*.cpp')
+
 OBJS = $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SRCS))
-#############################
+MODELS_OBJS = $(patsubst $(MODELSDIR)/%.cpp, $(OBJDIR)/models/%.o, $(MODELS_SRCS))
+ALL_OBJS = $(OBJS) $(MODELS_OBJS)
 
 #### regra principal, gera o executavel
-mlp: $(OBJS) 	
+tsp: $(ALL_OBJS) 	
 	@echo  "\033[31m \nLinking all objects files: \033[0m"
-	$(CPPC) $(BITS_OPTION) $(OBJS) -o $@ $(CCLNFLAGS)
+	$(CPPC) $(BITS_OPTION) $(ALL_OBJS) -o $@ $(CCLNFLAGS)
 ############################
 
 #inclui os arquivos de dependencias
@@ -42,14 +46,24 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 	$(CPPC) $(CCFLAGS) -c $< -o $@
 	@echo  "\033[32m \ncreating $< dependency file: \033[0m"
 	$(CPPC) -std=c++0x  -MM $< > $(basename $@).d
-	@mv -f $(basename $@).d $(basename $@).d.tmp #proximas tres linhas colocam o diretorio no arquivo de dependencias (g++ nao coloca, surprisingly!)
+	@mv -f $(basename $@).d $(basename $@).d.tmp
+	@sed -e 's|.*:|$(basename $@).o:|' < $(basename $@).d.tmp > $(basename $@).d
+	@rm -f $(basename $@).d.tmp
+
+$(OBJDIR)/models/%.o: $(MODELSDIR)/%.cpp
+	@mkdir -p $(dir $@)
+	@echo  "\033[31m \nCompiling $<: \033[0m"
+	$(CPPC) $(CCFLAGS) -c $< -o $@
+	@echo  "\033[32m \ncreating $< dependency file: \033[0m"
+	$(CPPC) -std=c++0x -I../models -MM $< > $(basename $@).d
+	@mv -f $(basename $@).d $(basename $@).d.tmp
 	@sed -e 's|.*:|$(basename $@).o:|' < $(basename $@).d.tmp > $(basename $@).d
 	@rm -f $(basename $@).d.tmp
 
 #delete objetos e arquivos de dependencia
 clean:
 	@echo "\033[31mcleaning obj directory \033[0m"
-	@rm mlp -f $(OBJDIR)/*.o $(OBJDIR)/*.d
+	@rm -rf tsp $(OBJDIR)
 
 
-rebuild: clean mlp
+rebuild: clean tsp

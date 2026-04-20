@@ -1,8 +1,8 @@
 #include <bits/stdc++.h>
 
-#include "models/Data.h"
-#include "models/Solucao.h"
-#include "models/aux_structures.h"
+#include "../../models/Data.h"
+#include "../../models/Solucao.h"
+#include "../../models/aux_structures.h"
 #include "heuristics/busca_local.h"
 #include "heuristics/construcao.h"
 #include "heuristics/perturbacao.h"

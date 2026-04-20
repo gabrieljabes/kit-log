@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../models/Data.h"
-#include "../models/Solucao.h"
+#include "../../../models/Data.h"
+#include "../../../models/Solucao.h"
 
 bool bestImprovementSwap(Solucao& s, Data& tsp_info);
 bool bestImprovement2Opt(Solucao& s, Data& tsp_info);

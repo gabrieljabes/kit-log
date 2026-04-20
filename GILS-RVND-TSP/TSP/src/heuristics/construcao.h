@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
-#include "../models/Data.h"
-#include "../models/Solucao.h"
+#include "../../../models/Data.h"
+#include "../../../models/Solucao.h"
 
 typedef struct{
     size_t noInserido;

@@ -52,7 +52,7 @@ bool bestImprovementOrOpt(Solucao& s, Data& problem_info, vector <vector<Subsequ
 
     for(size_t i = 1; i < matrix.size() - 1 - m; i++){
         for(size_t j = 0; j < matrix.size() - 1; j++){
-            if(j >= i - 1 &&  j <= i + m - 1) 
+            if(j >= i - 1 && j <= i + m - 1)
                 continue;
 
             Subsequence *particoes[5];

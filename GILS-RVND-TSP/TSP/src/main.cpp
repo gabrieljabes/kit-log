@@ -1,8 +1,8 @@
 #include <iostream>
 #include <chrono>
 
-#include "models/Data.h"
-#include "models/Solucao.h"
+#include "../../models/Data.h"
+#include "../../models/Solucao.h"
 #include "heuristics/ILS.h"
 
 
@@ -19,8 +19,8 @@ int main(int argc, char** argv) {
     cout << "DistanceMatrix: " << endl;
     data.printMatrixDist(); 
 
-    int maxIter = 50;
-    int maxIterILS = (data.getDimension() >= 150) ? ceil(data.getDimension()/2) : data.getDimension();
+    int maxIter = 10;
+    int maxIterILS = min((size_t)100, n);
     cout << maxIterILS << endl;
 
     auto t1 = chrono::high_resolution_clock::now();
