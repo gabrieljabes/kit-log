@@ -36,7 +36,7 @@ vector<vector<int>> All_Subtour(hungarian_problem_t& p, Data& data){
 	return all_s;
 }
 
-vector<int> min_subtour(vector<vector<int>>& all_subtour){
+int index_min_subtour(vector<vector<int>>& all_subtour){
 	size_t best_qtd = INT_MAX;
 	int best_i;
 	for(int i = 0; i < all_subtour.size(); i++){
@@ -46,5 +46,5 @@ vector<int> min_subtour(vector<vector<int>>& all_subtour){
 		}
 	}	
 
-	return all_subtour[best_i];
+	return best_i;
 }
