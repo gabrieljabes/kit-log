@@ -7,6 +7,15 @@ struct Node{
     double lower_bound;
     int choosen;
     bool feasible;
+
+    bool operator<(const Node& outro) const{
+        return lower_bound < outro.lower_bound;
+    }
+
+    bool operator>(const Node& outro) const{
+        return lower_bound > outro.lower_bound;
+    }
+
 };
 
 void updateNode(Node *node, Data& problem_info);
