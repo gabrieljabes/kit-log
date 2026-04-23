@@ -1,3 +1,4 @@
+#pragma once
 #include "subtours.h"
 
 struct Node{
