@@ -4,9 +4,12 @@ using namespace std;
 #include "Data.h"
 #include "hungarian.h"
 #include "subtours.h"
+#include "node.h"
+#include "branchingStrategy.h"
 #include <vector>
 #include <algorithm>
 #include <climits>
+#include <list>
 
 
 int main(int argc, char** argv) {
@@ -16,43 +19,46 @@ int main(int argc, char** argv) {
 
 	size_t n = data.getDimension();
 
-	double **cost = new double*[n];
-	for (int i = 0; i < n; i++){
-		cost[i] = new double[n];
-		for (int j = 0; j < n; j++){
-			cost[i][j] = data.getDistance(i+1,j+1);
+	Node root;
+	updateNode(&root, data);
+
+	list<Node> tree;
+	tree.push_back(root);
+
+	double upper_bound = stod(argv[2]) + 1;
+	vector <int> best_s;
+
+	while(!tree.empty()){
+		auto node = strategyDFS(tree);
+
+		if(node.feasible){
+			if(node.lower_bound < upper_bound){
+				upper_bound = node.lower_bound;
+				best_s = node.subtours[0];
+			}
+			continue;	
 		}
-	}
-
-	hungarian_problem_t p;
-	int mode = HUNGARIAN_MODE_MINIMIZE_COST;
-	hungarian_init(&p, cost, n, n, mode); // Carregando o problema
-
-	double obj_value = hungarian_solve(&p);
-	cout << "Obj. value: " << obj_value << endl;
-
-	cout << "Assignment" << endl;
-	hungarian_print_assignment(&p);
-
-
-	vector <vector<int>> subtours = All_Subtour(p, data);
 	
-	for(int i = 0; i < subtours.size(); i++){
-		for(int j = 0; j < subtours[i].size(); j++){
-			cout << subtours[i][j] << ", ";
+		for(int i = 0; i < node.subtours[node.choosen].size() - 1; i++){
+			Node n;
+			n.forbidden_arcs = node.forbidden_arcs;
+
+			pair<int, int> forbidden_arc;
+			//os subtours tem nodes a partir de 1
+			forbidden_arc.first = node.subtours[node.choosen][i] - 1;
+			forbidden_arc.second = node.subtours[node.choosen][i+1] - 1;
+
+			n.forbidden_arcs.push_back(forbidden_arc);
+			updateNode(&n, data);
+			if(n.lower_bound <= upper_bound)
+				tree.push_back(n);	
 		}
-		cout << endl;
 	}
 
-	vector<int> s = min_subtour(subtours);
+	for(auto& i : best_s)
+		cout << i << ", ";
+	cout << endl;
 
-	for(int i = 0; i < s.size(); i++){
-			cout << s[i] << ", ";
-		}
-
-	hungarian_free(&p);
-	for (int i = 0; i < n; i++) delete [] cost[i];
-	delete [] cost;
 
 	return 0;
 }
