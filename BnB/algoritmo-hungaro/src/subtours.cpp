@@ -31,8 +31,6 @@ vector<vector<int>> All_Subtour(hungarian_problem_t& p, Data& data){
 				all_s.push_back(Subtour(p, i, data, visitados));
 			}
 		}
-
-	cout << endl;
 	return all_s;
 }
 

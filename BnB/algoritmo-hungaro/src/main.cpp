@@ -40,6 +40,7 @@ int main(int argc, char** argv) {
 	for(auto& i : best_s)
 		cout << i << ", ";
 	cout << endl;
+	cout << " custo: " << upper_bound << endl;
 
 
 	return 0;
