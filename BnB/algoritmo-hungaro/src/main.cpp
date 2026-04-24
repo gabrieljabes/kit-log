@@ -11,6 +11,7 @@ using namespace std;
 #include <climits>
 #include <list>
 #include <queue>
+#include <chrono>
 
 void runBBS(Data& problem_info, Node& root, vector<int>& best_s, double& upper_bound);
 void runDFS_BFS(Data& problem_info, Node& root, vector<int>& best_s, double& upper_bound, string& strategy);
@@ -29,18 +30,22 @@ int main(int argc, char** argv) {
 	vector <int> best_s;
 	string strategy = argv[3];
 
+	auto t1 = chrono::high_resolution_clock::now();
 	if(strategy == "BBS")
 		runBBS(data, root, best_s, upper_bound);
 	else{
 		runDFS_BFS(data, root, best_s, upper_bound, strategy);
 	}
+	auto t2 = chrono::high_resolution_clock::now();
 
+	double tempo = chrono::duration<double>(t2 - t1).count();
 	
 
 	for(auto& i : best_s)
 		cout << i << ", ";
 	cout << endl;
 	cout << " custo: " << upper_bound << endl;
+	cout << " tempo: " << tempo << endl;
 
 
 	return 0;
