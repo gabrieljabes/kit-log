@@ -52,7 +52,7 @@ int main(int argc, char** argv) {
 }
 
 void runBBS(Data& problem_info, Node& root, vector<int>& best_s, double& upper_bound){
-	priority_queue<Node> tree;
+	priority_queue<Node, vector<Node>, greater<Node>> tree;
 	tree.push(root);
 	while(!tree.empty()){
 		auto node = strategyBBS(tree);

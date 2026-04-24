@@ -5,6 +5,6 @@
 
 Node strategyBFS(list<Node>& tree);
 Node strategyDFS(list <Node>& tree);
-Node strategyBBS(priority_queue <Node>& tree_BBS);
+Node strategyBBS(priority_queue<Node, vector<Node>, greater<Node>>& tree_BBS);
 
 Node DFS_or_BFS(string strategy, list<Node>& tree);

@@ -15,7 +15,7 @@ Node strategyDFS(list <Node>& tree){
     return next_node;
 }
 
-Node strategyBBS(priority_queue<Node>& tree_BBS){
+Node strategyBBS(priority_queue<Node, vector<Node>, greater<Node>>& tree_BBS){
     Node next_node = tree_BBS.top();
     tree_BBS.pop();
 
