@@ -71,6 +71,14 @@ OneTree solve1Tree(vector<vector<double>>& costs, vector<double>& lambda){
 
     tree.LB = lb;
     
+    //verifica se os graus sao estritamente 2
+    int max_degree = INT_MIN; int min_degree = INT_MAX;
+    for(int i = 0; i < tree.degree.size(); i++){
+        max_degree = max(max_degree, tree.degree[i]);
+        min_degree = min(min_degree, tree.degree[i]);
+    }
+    if(max_degree == 2 && min_degree == 2)
+        tree.is_tour = true;
 
     //debug print
     for(int i = 0; i < dim; i++){
