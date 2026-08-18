@@ -7,8 +7,8 @@ OneTree solve1Tree(vector<vector<double>>& costs, vector<double>& lambda){
     //- melhores distancias
     double menorCusto = INT_MAX;
     double sec_menorCusto = INT_MAX - 1;
-    int best_j;
-    int sec_best_j;
+    int best_j = -1;
+    int sec_best_j = -1;
 
 
         for(int i = 0; i < dim; i++){
@@ -44,10 +44,10 @@ OneTree solve1Tree(vector<vector<double>>& costs, vector<double>& lambda){
     //achando o grau dos nós
     map <int, int> nodes_degree;
 
-    for(int i = 0; i < dim; i++)
+    for(int i = 0; i < tree.edges.size(); i++)
         nodes_degree.insert({i, 0});
         
-    for(int i = 0; i < dim; i++){
+    for(int i = 0; i < tree.edges.size(); i++){
         nodes_degree[tree.edges[i].first]++;
         nodes_degree[tree.edges[i].second]++;
     }
@@ -69,33 +69,59 @@ OneTree solve1Tree(vector<vector<double>>& costs, vector<double>& lambda){
         lb += custos_linha[first_node][second_node] + 2*lambda[i];
     }
 
-    tree.LB = lb;
+    tree.LB = lb;   
     
     //verifica se os graus sao estritamente 2
     int max_degree = INT_MIN; int min_degree = INT_MAX;
-    for(int i = 0; i < tree.degree.size(); i++){
+    for(int i = 0; i < dim; i++){
         max_degree = max(max_degree, tree.degree[i]);
         min_degree = min(min_degree, tree.degree[i]);
     }
     if(max_degree == 2 && min_degree == 2)
         tree.is_tour = true;
-
-    //debug print
-    for(int i = 0; i < dim; i++){
-        for(int j = 0; j < dim; j++)
-            cout << custos_linha[i][j] << ", ";
-        cout << endl;
-    }
-    cout << "arestas:" << endl;
-    for(auto& i : tree.edges)
-        cout << i.first + 1 << " " << i.second + 1 << endl;
-    cout << "grau de cada nó:" << endl;
-    for(int i = 0; i < dim; i++)
-        cout  << "node: " << i + 1 << " degree: " << tree.degree[i] <<  endl;
-
-    cout << "lb: " << lb << endl;
     
     return tree;
 
 }
 
+
+OneTree SubgradientMethod(double& ub, vector<vector<double>>& costs){
+    int dim = costs.size();
+    double epsilon_min = pow(10, -5);
+    int k_max = 30;
+    
+    int k = 0;
+    double epsilon = 1;// w*
+    double u;
+    vector<double> lambda(dim, 0);
+    OneTree best_tree;
+
+    while(epsilon > epsilon_min && !best_tree.is_tour){
+        OneTree tree = solve1Tree(costs, lambda);
+
+        if(tree.LB > best_tree.LB){
+            best_tree = tree;
+            k = 0;
+        } else{
+            k+= 1;
+            if(k >= k_max){
+                k = 0;
+                epsilon /= 2;
+            }
+        }
+        // somatorio dos nos
+        double sum = 0;
+        for(int i = 0; i < dim; i++)
+            sum += pow((2 - tree.degree[i]), 2);
+
+        u = epsilon*((ub - tree.LB)/sum);
+        for(int i = 0; i < dim; i++)
+            lambda[i] += u*(2 - tree.degree[i]);
+
+    cout << "LB=" << tree.LB << " arestas=" << tree.edges.size() << endl;
+    for(auto &e : tree.edges) cout << e.first + 1 << "-" << e.second + 1<< endl;
+    for(int i = 0; i < dim; i++) cout << "grau[" << i << "]=" << tree.degree[i] << endl;
+
+    }
+    return best_tree;
+}       

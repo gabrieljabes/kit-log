@@ -5,8 +5,9 @@
 struct OneTree{
     vii edges;
     vector<int> degree;
-    double LB;
-    bool is_tour;
+    double LB = 0;
+    bool is_tour = false;
 };
 
 OneTree solve1Tree(vector<vector<double>>& costs, vector<double>& lambda);
+OneTree SubgradientMethod(double& ub, vector<vector<double>>& costs);
