@@ -8,7 +8,6 @@ using namespace std;
 
 int main(int argc, char** argv) {  
    
-
     srand(time(NULL));
     
     auto data = Data(argc, argv[1]);
@@ -24,4 +23,4 @@ int main(int argc, char** argv) {
     OneTree t = SubgradientMethod(ub, data);
 
     return 0;
-}
+}   

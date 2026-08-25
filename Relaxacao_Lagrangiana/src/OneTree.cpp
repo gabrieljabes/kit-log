@@ -86,7 +86,7 @@ OneTree solve1Tree(Data& tsp_info, vector<double>& lambda){
 }
 
 
-OneTree SubgradientMethod(double& ub, Data& tsp_info){
+OneTree SubgradientMethod(double& ub, Data& tsp_info, vector<double>& lambda){
     int dim = tsp_info.getDimension();
     double epsilon_min = pow(10, -5);
     int k_max = 30;
@@ -94,7 +94,6 @@ OneTree SubgradientMethod(double& ub, Data& tsp_info){
     int k = 0;
     double epsilon = 1;// w*
     double u;
-    vector<double> lambda(dim, 0);
     OneTree best_tree;
 
     while(epsilon > epsilon_min && !best_tree.is_tour){
@@ -126,3 +125,34 @@ OneTree SubgradientMethod(double& ub, Data& tsp_info){
     }
     return best_tree;
 }       
+
+
+OneTree OneTreeUpdate(OneTree& tree, Data& tsp_info){
+    size_t n = tsp_info.getDimension();
+    int max_degree = *max_element(tree.degree.begin(), tree.degree.end());
+    
+    pair<int, int> forbidden_edge;
+
+    double **cost = new double*[n];
+    for (int i = 0; i < n; i++){
+		cost[i] = new double[n];
+	for (int j = 0; j < n; j++){
+		cost[i][j] = tsp_info.getDistance(i+1,j+1);
+		}
+    }
+
+    for(int i = 0; i < tree.edges.size(); i++){
+        int j;
+        if(tree.edges[i].first == max_degree){
+            j = tree.edges[i].second;
+        } else if(tree.edges[i].second == max_degree){
+            j = tree.edges[i].first;
+        }
+        cost[j][max_degree] = 99999999;
+
+    for(int i = 0; i < n; i++)
+        delete[] cost[i];
+    delete[] cost;
+
+    }
+}
