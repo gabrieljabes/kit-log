@@ -1,29 +1,28 @@
 #include "branchingStrategy.h"
-#include "OneTree.h"
 #include <queue>
 
-OneTree strategyBFS(list<OneTree>& tree){
-    OneTree next_tree = tree.front();
+Node strategyBFS(list<Node>& tree){
+    Node next_node = tree.front();
     tree.pop_front();
 
-    return next_tree;
+    return next_node;
 }
 
-OneTree strategyDFS(list <OneTree>& tree){
-    OneTree next_tree = tree.back();
+Node strategyDFS(list <Node>& tree){
+    Node next_node = tree.back();
     tree.pop_back();
 
-    return next_tree;
+    return next_node;
 }
 
-OneTree strategyBBS(priority_queue<OneTree, vector<OneTree>, greater<OneTree>>& tree_BBS){
-    OneTree next_tree = tree_BBS.top();
+Node strategyBBS(priority_queue<Node, vector<Node>, greater<Node>>& tree_BBS){
+    Node next_node = tree_BBS.top();
     tree_BBS.pop();
 
-    return next_tree;
+    return next_node;
 }
 
-OneTree DFS_or_BFS(string strategy, list<OneTree>& tree){
+Node DFS_or_BFS(string strategy, list<Node>& tree){
     if(strategy == "BFS")
         return strategyBFS(tree);
     if(strategy == "DFS")

@@ -12,8 +12,10 @@ struct OneTree{
     bool operator<(const OneTree& outro) const{
     return LB < outro.LB;
     }
-};
 
-OneTree OneTreeUpdate(OneTree& tree);
-OneTree solve1Tree(Data& tsp_info, vector<double>& lambda);
-OneTree SubgradientMethod(double& ub, Data& tsp_info, vector<double>& lambda);
+    bool operator>(const OneTree& outro) const{
+    return LB > outro.LB;
+    }
+};
+OneTree solve1Tree(vector<double>& lambda, vector<vector<double>>& custos_linha);
+OneTree SubgradientMethod(double& ub, vector<double>& lambda, vector<vector<double>>& custos_linha);
