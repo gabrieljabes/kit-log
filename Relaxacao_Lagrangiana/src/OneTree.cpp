@@ -88,7 +88,7 @@ OneTree SubgradientMethod(double& ub, vector<double>& lambda, vector<vector<doub
     vector<vector<double>> custos_linha(dim, vector<double>(dim));
     vector<double> best_lambda(dim);
 
-    while(epsilon > epsilon_min && !best_tree.is_tour){
+    while(epsilon > epsilon_min){
 
         for(int i = 0; i < dim; i++){
             for(int j = i + 1; j < dim; j++){
@@ -120,14 +120,8 @@ OneTree SubgradientMethod(double& ub, vector<double>& lambda, vector<vector<doub
         u = epsilon*((ub - tree.LB)/sum);
         for(int i = 0; i < dim; i++)
             lambda[i] += u*(2 - tree.degree[i]);
-
-    cout << "LB=" << tree.LB << " arestas=" << tree.edges.size() << endl;
-    for(auto &e : tree.edges) cout << e.first + 1 << "-" << e.second + 1<< endl;
-    for(int i = 0; i < dim; i++) cout << "grau[" << i << "]=" << tree.degree[i] << endl;
-
     }
 
     lambda = best_lambda;
     return best_tree;
 }       
-
