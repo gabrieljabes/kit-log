@@ -17,9 +17,21 @@ std::vector<std::vector<double>> edges = {
     {0.0,  0.0,  0.0,  0.0,  0.0,  1.0,  1.0,  0.0}   // H
 };
 
+<<<<<<< HEAD
     int n = edges.size();
  vector<vector<int>> cut_sets;
     vector<bool> cut_node(n);
+=======
+    //for (int i = 0; i < n; i++)
+    // vai testar com todos os nos
+        int n = edges.size();
+        vector<bool> S_group(n);
+
+        vector<double> w(n, 0);
+        //0 -> i 
+        int inicio = 0;
+        double cut;
+>>>>>>> refs/remotes/origin/main
 
     for(int k = 0; k < n; k++){
         if(cut_node[k] == true)
@@ -32,6 +44,7 @@ std::vector<std::vector<double>> edges = {
 
         double min_cut = 99999999;
 
+<<<<<<< HEAD
         for(int i = 0; i < n - 1; i++){
             if(i == 0)
                 S_group[k] = true;
@@ -81,7 +94,53 @@ std::vector<std::vector<double>> edges = {
         }
         cout << endl;
     }
+=======
+        S_group[0] = true;
+        int last_visited = 0;
+        for(int i = 0; i < n; i++){
+
+            int best_edge_index;
+            double best_edge = 0;
+
+            cout << " ==== iteraçao " << i << endl;
+            for(int j = 0; j < w.size(); j++){
+                if(S_group[j])
+                    continue;
+                w[j] += edges[last_visited][j];
+                if(w[j] > best_edge && S_group[j] == false){
+                    best_edge = w[j];
+                    best_edge_index = j;
+                }
+            }
+            double sum = 0;
+            for(int j = 0; j < w.size(); j++){
+                if(S_group[j])
+                    continue;
+                sum += w[j]; 
+            }
+
+            if(sum < 2){
+                cut = sum;
+                break;
+            } else{
+                S_group[best_edge_index] = true;
+                last_visited = best_edge_index;
+            }
+
+            cout << "w=" << endl;
+            for(auto &e : w)
+                cout << e << " ";
+            cout << endl << endl;
+
+
+        
+            cout << "soma=" << sum << endl;
+        }
+
+        cout << "cut=" << cut << endl;
+>>>>>>> refs/remotes/origin/main
 
     return 0;
 
 }
+
