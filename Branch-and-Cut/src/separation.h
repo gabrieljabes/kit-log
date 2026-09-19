@@ -22,12 +22,6 @@
 
 using namespace std;
 
-typedef struct{
-    vector<int> order;
-    vector<double> cuts; 
-} Phase;
-
-Phase InnerMaxBack(double** x, int start, int n);
 vector <vector<int> > MaxBack(double** x, int n);
 vector <vector<int> > MinCut(double** x, int n);
 

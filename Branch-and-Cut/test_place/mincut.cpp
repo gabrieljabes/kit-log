@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <bits/stdc++.h>
+#include <cstddef>
 #include <ostream>
 
 using namespace std;
@@ -11,14 +12,7 @@ typedef struct{
 } Phase;
 
 
-void debug(vector<vector<double>>& x, Phase& p){
-    cout << "matrix: " << endl;
-    for(int i = 0; i < x.size(); i++){
-        for(int j = 0; j < x.size(); j++)
-            cout << x[i][j] << " ";
-        cout << endl;
-    }
-
+void debug(Phase& p){
     cout << "order and cuts" << endl;
     for(auto& e : p.order)
         cout << e << " ";
@@ -40,8 +34,6 @@ Phase InnerMaxBack(vector<vector<double>>& x, vector<bool> G, int start, int n){
     for(auto e : G)
         if(!e)
             lack++;
-
-    cout << "lack: " << lack << endl;
 
     phase.order.push_back(start);
     for(int i = 0; i < n - lack; i++){
@@ -84,89 +76,80 @@ Phase InnerMaxBack(vector<vector<double>>& x, vector<bool> G, int start, int n){
 
 
 int main(){
-
-vector<vector<double>> edges = {
-    {0,  9,  0, 12, 11,  0},
-    {9,  0,  4,  0,  9,  0},
-    {0,  4,  0,  0, 18,  7},
-    {12, 0,  0,  0,  0,  0},
-    {11, 9, 18,  0,  0, 11},
-    {0,  0,  7,  0, 11,  0}
+/*
+    vector<vector<double>> w2= {
+        {0,  9,  0, 12, 11,  0},
+        {9,  0,  4,  0,  9,  0},
+        {0,  4,  0,  0, 18,  7},
+        {12, 0,  0,  0,  0,  0},
+        {11, 9, 18,  0,  0, 11},
+        {0,  0,  7,  0, 11,  0}
+    };
+*/
+    vector<vector<double>> edges = {
+    {0,   1,   0.5, 0.5, 0,   0  },
+    {1,   0,   1,   0,   0,   0  },
+    {0.5, 1,   0,   0,   0,   0.5},
+    {0.5, 0,   0,   0,   1,   0.5},
+    {0,   0,   0,   1,   0,   1  },
+    {0,   0,   0.5, 0.5, 1,   0  }
 };
 
-
+/*
+    vector<vector<double>> edges = {
+        {0,  20,  25, 0},
+        {20,  0,  8,  10},
+        {25,  8,  0,  18},
+        {0, 10,  18,  0},
+    };
+*/
     int n = edges.size();
-
-    vector<vector<double>> x_costs(n, vector<double>(n));
-    for(int i = 0; i < n; i++){
-        for(int j = i+1; j < n; j++){
-            x_costs[i][j] = edges[i][j];
-            x_costs[j][i] = x_costs[i][j];
-        }
-    } 
     
-    vector<vector<int>> cut_sets;
-    vector<bool> cut_node(n);
-    double best_min_cut = 9999999;
-    vector<bool> g(n, 1);
+        vector<vector<double>> x_costs(n, vector<double>(n));
+            for(int i = 0; i < n; i++){
+                for(int j = i+1; j < n; j++){
+                    x_costs[i][j] = edges[i][j];
+                    x_costs[j][i] = x_costs[i][j];
+                }
+            }
 
+        vector<vector<int>> cut_sets;
+     
+        double best_min_cut = 9999999;
+        vector<bool> active(n, 1);
+        vector<vector<int>> nodes(n);
 
-        Phase p = InnerMaxBack(x_costs, g, 0, n);
+         for(int i = 0; i < n; i++) 
+            nodes[i] = {i};
 
-        int s = p.order[p.order.size() - 2]; //penultimo
-        int t = p.order[p.order.size() - 1]; // ultimo
+        for(int i = 0; i < n - 1; i++){
+            Phase p = InnerMaxBack(x_costs, active, 0, n);
 
-        g[t] = false;
+            int s = p.order[p.order.size() - 2]; //penultimo
+            int t = p.order[p.order.size() - 1]; // ultimo
 
-        for(int j = 0; j < n; j++){
-            if(!g[j])
-                continue;
-            x_costs[s][j] += x_costs[t][j];
-            x_costs[j][s] = x_costs[s][j];
+            double cut = p.cuts.back();
+
+            if(cut < 2.0 - EPSILON){
+                cut_sets.push_back(nodes[t]);
+            }
+
+            active[t] = false;
+
+            for(int i = 0; i < nodes[t].size(); i++)
+                nodes[s].push_back(nodes[t][i]);
+            
+            nodes[t].clear();
+
+            for(int j = 0; j < n; j++){
+                if(!active[j])
+                    continue;
+                x_costs[s][j] += x_costs[t][j];
+                x_costs[j][s] = x_costs[s][j];
+            }
         }
 
-        x_costs[s][t] = 0;
-        x_costs[t][s] = 0;
 
-        p = InnerMaxBack(x_costs, g, 0, n);
-
-        s = p.order[p.order.size() - 2]; //penultimo
-        t = p.order[p.order.size() - 1]; // ultimo
-
-
-        g[t] = false;
-
-        for(int j = 0; j < n; j++){
-            if(!g[j])
-                continue;
-            x_costs[s][j] += x_costs[t][j];
-            x_costs[j][s] = x_costs[s][j];
-        }
-
-        x_costs[s][t] = 0;
-        x_costs[t][s] = 0;
-
-        p = InnerMaxBack(x_costs, g, 0, n);
-
-        s = p.order[p.order.size() - 2]; //penultimo
-        t = p.order[p.order.size() - 1]; // ultimo
-
-
-        g[t] = false;
-
-        for(int j = 0; j < n; j++){
-            if(!g[j])
-                continue;
-            x_costs[s][j] += x_costs[t][j];
-            x_costs[j][s] = x_costs[s][j];
-        }
-
-        x_costs[s][t] = 0;
-        x_costs[t][s] = 0;
-        
-        p = InnerMaxBack(x_costs, g, 0, n);
-
-        debug(x_costs, p);
     return 0;
 
 }
